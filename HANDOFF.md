@@ -6,24 +6,25 @@ Bijgewerkt: 17 november 2026 (na iteratie 008). Lees eerst `AGENTS.md`.
 
 | Onderdeel | Waar | Getest |
 | --- | --- | --- |
-| App (invoer, vaste teksten, kanalen, planner) | `verkooppraat-live.html` = `repo/index.html` | Ja, in Safari (iteratie 007) |
+| App (invoer, vaste teksten, kanalen, planner) | `verkooppraat-live.html` = `repo/index.html` | Ja, in Safari (iteraties 007 en 008) |
 | Live site | https://freekvanrijn.nl/verkooppraat/ (GitHub Pages, repo `Freekvrijn/verkooppraat`, branch `main`) | Ja |
-| Claude-artifact | https://claude.ai/artifact/ToEHgrCNwsBVXQYTuW1B87 (privé, versie 8, capabilities sample/db/user/downloads) | Deels; planner in het artifact niet getest |
+| Claude-artifact | https://claude.ai/artifact/ToEHgrCNwsBVXQYTuW1B87 (privé, versie 9, capabilities sample/db/user/downloads) | Deels; planner in het artifact niet getest |
 | Supabase-project | `oznirspodtzyqtbmzhlf` (‘VerkoopPraat’, organisatie AI Skills Lab, gratis laag) | Ja |
 | Tabellen | `histories` (`supabase/schema.sql`) en `posts` (`supabase/schema-planner.sql`), RLS: alleen eigen rijen | Ja, met twee anonieme gebruikers |
 | Auth | Anonieme login aan; de sessie staat in localStorage (`vp_sb_session`) | Ja |
 | Edge Function | `verkoopteksten` (`supabase/functions/verkoopteksten/index.ts`); onderdelen `all`/`slogan`/`insta`/`pitch` en `kanalen` | Ja |
 | AI | Gemini 3.7 Flash, terugval op 3.5 Flash Lite. Sleutel ‘VerkoopPraat’ in Google AI Studio (Default Gemini Project, Tier 1). Maandlimiet € 5 | Ja |
-| Documentatie | `docs/PRD.md`, `docs/proceslog.md`, `docs/bewijs/iteratie-001` t/m `007` | – |
+| Documentatie | `docs/PRD.md`, `docs/proceslog.md`, `docs/bewijs/iteratie-001` t/m `008` | – |
 
 ## Wat werkt nog niet of is onbekend
 
 - **Nog niet gebouwd (uit de feedbackrollen):** een CAPTCHA op anonieme aanmelding, het opruimen van oude anonieme accounts, een AI-vermelding bij het kopiëren en het automatisch inkorten van te lange teksten.
 - **PWA:** installeren op een echte telefoon is nog niet getest.
-- **Lengte ‘kort’:** de AI houdt ‘kort’ niet altijd aan (Instagram kort: 130 in plaats van 125). De teller maakt dat zichtbaar.
-- **Rate limit:** de limiet in de Edge Function (20 per 10 minuten) geldt per functie-instantie en is dus niet waterdicht.
-- **Onbekend:** de planner in het Claude-artifact (versie 8) en de app op een echte telefoon.
-- **Screenshots:** die van iteratie 002 tot en met 007 ontbreken; Freek maakt ze zelf.
+- **Lengte ‘kort’:** de AI houdt ‘kort’ niet altijd aan (Instagram kort: eerst 130, na iteratie 008 122 van de 125). De teller maakt een overschrijding zichtbaar.
+- **Rate limit:** de limiet in de Edge Function (30 per 10 minuten) geldt per functie-instantie en is dus niet waterdicht.
+- **Onbekend:** de planner in het Claude-artifact (versie 9).
+- **Screenshots:** die van iteratie 002 tot en met 008 ontbreken; Freek maakt ze zelf.
+- **AGENTS.md op GitHub:** staat er niet op, omdat Freeks globale git-instelling `agents.md` uitsluit.
 
 ## Klaar in iteratie 008
 
