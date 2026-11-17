@@ -1,6 +1,6 @@
 # HANDOFF.md – technische overdracht VerkoopPraat
 
-Bijgewerkt: 17 november 2026 (iteratie 008, bezig). Lees eerst `AGENTS.md`.
+Bijgewerkt: 17 november 2026 (na iteratie 008). Lees eerst `AGENTS.md`.
 
 ## Wat is klaar
 
@@ -18,17 +18,18 @@ Bijgewerkt: 17 november 2026 (iteratie 008, bezig). Lees eerst `AGENTS.md`.
 
 ## Wat werkt nog niet of is onbekend
 
-- **Waarschuwingen bij kanaalteksten:** de waarschuwing voor riskante woorden (F9) geldt alleen voor de vaste teksten.
+- **Nog niet gebouwd (uit de feedbackrollen):** een CAPTCHA op anonieme aanmelding, het opruimen van oude anonieme accounts, een AI-vermelding bij het kopiëren en het automatisch inkorten van te lange teksten.
+- **PWA:** installeren op een echte telefoon is nog niet getest.
 - **Lengte ‘kort’:** de AI houdt ‘kort’ niet altijd aan (Instagram kort: 130 in plaats van 125). De teller maakt dat zichtbaar.
 - **Rate limit:** de limiet in de Edge Function (20 per 10 minuten) geldt per functie-instantie en is dus niet waterdicht.
 - **Onbekend:** de planner in het Claude-artifact (versie 8) en de app op een echte telefoon.
 - **Screenshots:** die van iteratie 002 tot en met 007 ontbreken; Freek maakt ze zelf.
 
-## Bezig (iteratie 008)
+## Klaar in iteratie 008
 
-- PWA: manifest, icoon en service worker, zodat de app op de telefoon te installeren is.
-- Review door vier subagents volgens de feedbackrollen van les 2-1 (technisch, kritisch, ethisch, systeem); de bevindingen gaan in `docs/bewijs/iteratie-008/`.
-- Concept voor sprintpresentatie 1 (PowerPoint) met bijlage per persoon.
+- **PWA:** `manifest.webmanifest`, `sw.js` en `pwa/`.
+- **Feedbackrollen:** review door vier subagents, met verbeteringen; zie `docs/bewijs/iteratie-008/`.
+- **Documenten:** `docs/PRD.md`, `AGENTS.md` en dit bestand.
 
 ## Volgende stappen
 
