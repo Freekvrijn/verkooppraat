@@ -614,7 +614,7 @@ const MODES={checking:['AI-beschikbaarheid controleren…','wait'],none:['Voorbe
   ready:['AI-modus aan · nog geen aanvraag gedaan','wait'],ok:['AI actief · laatste aanvraag geslaagd','on'],
   fail:['AI niet bereikbaar · voorbeeldgenerator gebruikt','off'],off:['Voorbeeldgenerator · AI uitgezet','off']};
 function setMode(){let [t,cls]=MODES[aiState]||MODES.none;
-  if(aiKind&&['ready','ok','fail'].includes(aiState))t=t.replace(/^AI/,aiKind==='gemini'?'AI (Gemini)':'AI (Claude)');
+  if(aiKind&&['ready','ok','fail'].includes(aiState))t=(aiKind==='gemini'?'Gemini-':'Claude-')+t;
   $('#modeTxt').textContent=t;$('#dot').className='dot '+cls}
 $('#mode').addEventListener('click',()=>{
   if(!aiKind){toast('AI is hier niet beschikbaar. De ingebouwde voorbeeldgenerator werkt altijd.');return}
