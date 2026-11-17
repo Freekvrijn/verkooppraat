@@ -4,6 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>VerkoopPraat – Maak het verkoopbaar</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0f6b55">
+<link rel="apple-touch-icon" href="pwa/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="VerkoopPraat">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -254,6 +259,7 @@ footer{color:var(--soft);margin-top:28px;font-size:.8rem;border-top:1px solid va
 .pacties{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 .pstatus.s-klaar{border-color:var(--accent);color:var(--accent)}
 .pstatus.s-geplaatst{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.gohint{text-align:center;font-size:.78rem;margin-top:10px;color:var(--soft)}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
@@ -332,6 +338,7 @@ footer{color:var(--soft);margin-top:28px;font-size:.8rem;border-top:1px solid va
       </details>
 
       <button class="btn big" id="go" type="button">Maak de verkoopteksten</button>
+      <p class="hint gohint">Je invoer gaat naar een AI-dienst. Vul geen persoonsgegevens in.</p>
     </section>
 
     <!-- UITVOER -->
@@ -659,7 +666,8 @@ function kanaalVelden(kanaal,soort,lengte){
 function basisPrompt(d){
   const eig=d.sterke_punten||[],prijs=d.prijs,merk=d.merk_of_winkel,ctx=d.gebruikscontext,formal=d.aanspreekvorm==='u';
   const humor=/grappig|speels|humor|lol|grap/i.test(d.stijl)?`
-- Humor is hier het belangrijkste: de lezer moet echt grinniken. Gebruik een herkenbare, overdreven situatie uit het leven van de doelgroep, een onverwachte draai, zelfspot of een woordgrap. Liever één sterke grap dan veel uitroeptekens.
+- Humor is hier het belangrijkste: de lezer moet echt grinniken. Gebruik een herkenbare situatie rond het product, een onverwachte draai of een woordgrap. Liever één sterke grap dan veel uitroeptekens.
+- Maak geen grap ten koste van de doelgroep (dus niet over 'luie studenten' of 'afwassen doe je toch niet').
 - De grap zit in de situatie en de formulering, nooit in verzonnen producteigenschappen of beloftes.
 - Vermijd clichés zoals "Breaking news", "Wie kent het niet?" en "nog nooit zo makkelijk".`:'';
   return `Je bent een ervaren Nederlandse copywriter die voor kleine webshops teksten schrijft die echt verkopen: pakkend, concreet en menselijk, zoals een goede social-mediamanager dat doet. Geen ambtelijke of opsommende zinnen.
@@ -670,7 +678,9 @@ ${JSON.stringify(d)}
 Feiten (heel belangrijk):
 - Gebruik als feiten alleen wat in "product", "sterke_punten", "prijs" en "merk_of_winkel" staat. Verzin geen nieuwe eigenschappen, materialen, maten, getallen, percentages, kortingen, acties, levertijden, garanties, keurmerken, duurzaamheids- of gezondheidsclaims.
 - Je mag wél het directe, logische gevolg van een opgegeven eigenschap noemen, zodat het een voordeel wordt. Voorbeeld: "lekvrij" → "geen natte tas meer"; "vaatwasserbestendig" → "zo weer schoon". Blijf daarbij dicht bij de eigenschap en noem geen onderdelen die niet zijn opgegeven (zoals een dop, handvat of deksel).
+- Verzin ook geen details over gebruik of situatie die als feit klinken, zoals "zonder bijvullen" of "je college duurt drie uur".
 - Geen lege verkoopwoorden die iets beweren wat niet is opgegeven, zoals "handig", "perfect", "de beste", "slechts" of "maar".
+- Verzin geen verkoopplek of website. Verwijs naar "de productpagina" of naar de winkel uit "merk_of_winkel". "Link in bio" alleen bij Instagram en TikTok.
 - ${eig.length?'Verwerk de sterke punten als voordelen, niet als droge opsomming.':'Er zijn geen sterke punten opgegeven: noem geen eigenschappen van het product. Maak de tekst sterk via de situatie van de doelgroep, de stijl en een nieuwsgierig makende call-to-action.'}
 - ${prijs?`Noem de prijs precies als "${prijs}".`:'Er is geen prijs: noem geen bedrag.'}${merk?` Noem het merk "${merk}".`:''}
 
@@ -679,7 +689,7 @@ Schrijfwijze:
 - Doelgroep "${d.doelgroep}": spreek de lezer aan met "${formal?'u':'je'}" en gebruik een herkenbare situatie${ctx?` (${ctx})`:''}. Geen stereotypen.
 - Stijl "${d.stijl}" en energie ${d.energie} (1 = rustig, 2 = pittig, 3 = uitbundig) bepalen toon, ritme en woordkeus. Maak de stijl duidelijk merkbaar.${humor}
 - ${d.emoji?'Gebruik een paar passende emoji’s, niet overdreven.':'Gebruik geen emoji’s.'}
-- Correct, vlot Nederlands. Geen anglicismen als het Nederlands net zo goed kan.`}
+- Correct, vlot Nederlands. Geen Engelse woorden of hashtags (dus niet "Hey" of #collegelife).${/tiener|kind|jeugd|scholier/i.test(d.doelgroep||'')?'\n- De doelgroep is (deels) minderjarig: geen koopdruk of haast (zoals "nu kopen" of "op is op").':''}`}
 
 /* Prompt voor de vaste teksten (slogan, Instagram, pitch). */
 function vastePrompt(d,part){
@@ -715,7 +725,7 @@ function kanaalPrompt(d,sel){
     else{regels.push(`- "${id}": ${K.regel} Lengte ${s.lengte}: maximaal ${L} tekens (dit is een harde bovengrens voor deze tekst, ook al staat het platform meer toe).`);vorm.push(`"${id}": {"tekst": string}`)}}
   return basisPrompt(d)+`
 
-Maak per kanaal een eigen, complete tekst in het formaat van dat kanaal. Tel tekens inclusief spaties, leestekens, emoji's en hashtags, en blijf ruim binnen elke limiet.
+Maak per kanaal een eigen, complete tekst in het formaat van dat kanaal. Gebruik in elke tekst een andere haak en een ander beeld of grap: herhaal niet hetzelfde beeld in meer dan één tekst. Tel tekens inclusief spaties, leestekens, emoji's en hashtags, en blijf ruim binnen elke limiet.
 ${regels.join('\n')}
 
 Geef bij elke tekst ook "cta": één korte call-to-action die bij dat kanaal past (bij Meta Ads gelijk aan de knop). Gebruik \\n voor nieuwe regels.
@@ -733,10 +743,10 @@ function validAI(r,part){
   return out}
 // Voor Gemini bouwt de Edge Function de prompt op de server met dezelfde regels (supabase/functions/verkoopteksten).
 let gemFallback=false;
-async function gemGen(o,part){await sbEnsure();const r=await sbFetch('/functions/v1/verkoopteksten',{method:'POST',timeout:45000,body:JSON.stringify({part,data:aiData(o)})});gemFallback=!!(r&&r.fallback);return r&&r.result}
+async function gemGen(o,part){await sbEnsure();const r=await sbFetch('/functions/v1/verkoopteksten',{method:'POST',timeout:60000,body:JSON.stringify({part,data:aiData(o)})});gemFallback=!!(r&&r.fallback);return r&&r.result}
 async function aiGen(o,part){
   const call=aiKind==='claude'?sampleFn.json(aiPrompt(o,part),{modelTier:'quick',cache:false}):gemGen(o,part);
-  const r=await Promise.race([call,sleep(45000).then(()=>{throw new Error('geen antwoord binnen 45 seconden')})]);
+  const r=await Promise.race([call,sleep(60000).then(()=>{throw new Error('geen antwoord binnen 60 seconden')})]);
   return validAI(r,part)}
 // Woorden die op verzonnen claims kunnen wijzen; alleen gemeld als ze niet in de invoer staan.
 const RISKY=['garantie','korting','gratis','actie','aanbieding','uitverkoop','op=op','beperkt','bewezen','getest','nummer 1','beste','duurzaam','milieuvriendelijk','biologisch','gezond','energie','focus','prestaties','resultaat'];
@@ -752,6 +762,8 @@ const partText=(g,k)=>k==='pitch'?g.pitch.join(' '):g[k];
 function inputNotes(o){const n=[];
   if(!o.uspList.length)n.push('Geen sterke punten ingevuld, dus de tekst noemt geen producteigenschappen. Vul ze in bij ‘Meer details’ voor een concretere tekst.');
   if(o.priceRaw&&!o.priceOk)n.push(`De prijs “${o.priceRaw}” is niet herkend als bedrag en wordt letterlijk gebruikt.`);
+  const claim=['duurzaam','milieuvriendelijk','klimaatneutraal','biologisch','gezond','beste','nummer 1','bewezen','100%'].filter(w=>(o.product+' '+o.uspRaw).toLowerCase().includes(w));
+  if(claim.length)n.push(`Je noemt ${claim.map(w=>`“${w}”`).join(', ')}. Zulke claims moet je kunnen aantonen; anders kan de tekst misleidend zijn.`);
   return n}
 function tplNotes(o){const n=[];
   if(o.customSty)n.push(`Eigen stijl “${o.styleName}” kan de voorbeeldgenerator niet nadoen. Deze tekst is geschreven in de stijl ‘direct’. Alleen een geslaagde AI-aanvraag past een eigen stijl toe.`);
@@ -849,14 +861,14 @@ function checkStale(){if(!last||$('#out').hidden){$('#stale').hidden=true;return
 
 /* ---------- genereren ---------- */
 function setBusy(on,msg){busy=on;const go=$('#go');go.disabled=on;go.textContent=on?'Bezig met schrijven…':'Maak de verkoopteksten';
-  $('#again').disabled=on;$('#staleGo').disabled=on;
+  $('#again').disabled=on;$('#staleGo').disabled=on;$$('[data-re]').forEach(x=>x.disabled=on);
   $('#loader').hidden=!on;if(on)$('#loadTxt').textContent=msg||(useAI&&aiKind?'AI schrijft je teksten… dit kan even duren.':'Teksten worden gemaakt met de voorbeeldgenerator…');
   $('#out').classList.toggle('dim',on);$('#resPanel').setAttribute('aria-busy',String(on));if(on)$('#empty').hidden=true;else if(!last)$('#empty').hidden=false;setSaveBtn()}
 function showErr(msg){$('#genErrTxt').textContent=msg;$('#genErr').hidden=!msg}
 const newId=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 function entryFrom(o,r){return{id:newId(),o,g:r.data,src:{slogan:r.src,insta:r.src,pitch:r.src},warn:r.warn,pnotes:{slogan:r.notes,insta:r.notes,pitch:r.notes},t:Date.now()}}
 async function run(){
-  if(busy)return;const o=readForm();if(!validate(o))return;
+  if(busy||reBusy)return;const o=readForm();if(!validate(o))return;
   const sel=kanaalSelecties();
   showErr('');setBusy(true);
   let kanP=null;
@@ -874,12 +886,13 @@ async function run(){
 $('#go').addEventListener('click',run);$('#again').addEventListener('click',run);$('#staleGo').addEventListener('click',run);$('#retry').addEventListener('click',run);
 
 /* opnieuw per onderdeel: met dezelfde invoer als de getoonde teksten */
+let reBusy=0;
 for(const b of $$('[data-re]'))b.addEventListener('click',async()=>{
-  if(!last||busy||b.disabled)return;const part=b.dataset.re,old=b.textContent;b.disabled=true;b.textContent='Bezig…';
-  try{const cur=readOut();const r=await generate(last.o,part,cur);last.g={...cur,...r.data};last.src[part]=r.src;last.warn[part]=r.warn[part]||[];last.pnotes[part]=r.notes;
+  if(!last||busy||b.disabled)return;const part=b.dataset.re,old=b.textContent,bron=last;b.disabled=true;b.textContent='Bezig…';reBusy++;$('#go').disabled=true;
+  try{const cur=readOut();const r=await generate(bron.o,part,cur);if(last!==bron)return;last.g={...readOut(),...r.data};last.src[part]=r.src;last.warn[part]=r.warn[part]||[];last.pnotes[part]=r.notes;
     renderPart(part);renderNotes();saveHist();toast(r.src==='ai'?'Nieuwe versie gemaakt door AI.':'Nieuwe versie gemaakt met de voorbeeldgenerator.')}
   catch(e){toast('Opnieuw maken lukte niet. De vorige tekst staat er nog.')}
-  finally{b.disabled=false;b.textContent=old}});
+  finally{b.disabled=false;b.textContent=old;reBusy--;if(!reBusy&&!busy)$('#go').disabled=false}});
 
 /* bewerkingen bewaren in de geschiedenis */
 let editT=0;$('#out').addEventListener('input',e=>{if(!last||!e.target.closest('[contenteditable]'))return;clearTimeout(editT);editT=setTimeout(()=>{last.g=readOut();saveHist()},500)});
@@ -951,11 +964,16 @@ async function sbFetch(path,opts={},auth=true){
   catch(e){if(e&&e.name==='AbortError')throw new Error(`geen antwoord binnen ${ms/1000} seconden`);if(e instanceof TypeError)throw new Error('geen verbinding met Supabase ('+clean(e.message).slice(0,80)+')');throw e}
   finally{clearTimeout(t)}}
 const keepSess=s=>({access_token:s.access_token,refresh_token:s.refresh_token,expires_at:s.expires_at||Math.floor(Date.now()/1000)+(s.expires_in||3600)});
-async function sbEnsure(){
-  if(sbSess&&sbSess.expires_at*1000>Date.now()+60000)return;
+let sbEnsureP=null;
+function sbEnsure(){
+  if(sbSess&&sbSess.expires_at*1000>Date.now()+60000)return Promise.resolve();
+  if(!sbEnsureP)sbEnsureP=sbEnsureEcht().finally(()=>{sbEnsureP=null});
+  return sbEnsureP}
+async function sbEnsureEcht(){
   const s=store.get(SKEY,null);
   if(s&&s.access_token&&s.expires_at*1000>Date.now()+60000){sbSess=s;return}
-  if(s&&s.refresh_token){try{sbSess=keepSess(await sbFetch('/auth/v1/token?grant_type=refresh_token',{method:'POST',body:JSON.stringify({refresh_token:s.refresh_token})},false));store.set(SKEY,sbSess);return}catch(e){}}
+  if(s&&s.refresh_token){try{sbSess=keepSess(await sbFetch('/auth/v1/token?grant_type=refresh_token',{method:'POST',body:JSON.stringify({refresh_token:s.refresh_token})},false));store.set(SKEY,sbSess);return}
+    catch(e){if(![400,401,403].includes(e.status))throw new Error('verbinding met Supabase mislukt; je bewaarde teksten blijven staan. Probeer het opnieuw ('+clean(e.message).slice(0,60)+')')}}
   try{sbSess=keepSess(await sbFetch('/auth/v1/signup',{method:'POST',body:'{}'},false));store.set(SKEY,sbSess)}
   catch(e){if(/anonymous/i.test(e.message))throw new Error('anonieme login staat uit in Supabase');throw e}}
 const BK={
@@ -1021,6 +1039,7 @@ $('#dbSave').addEventListener('click',dbSave);
 $('#dbList').addEventListener('click',e=>{const it=e.target.closest('.hitem');if(!it||busy)return;const d=dbDocs.find(x=>x.id===it.dataset.dbid);if(!d||!validEntry(d.x))return;
   const entry=revive(d.x);entry.id=d.id;applyToForm(entry.o);show(entry);toast('Teruggezet uit de database.')});
 dbInit().then(planInit);
+if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='127.0.0.1')&&!/claude|anthropic/.test(location.hostname)){navigator.serviceWorker.register('sw.js').catch(()=>{})}
 
 /* ---------- stap 4: waar ga je het plaatsen? (vinkjestabel kanaal × soort) ---------- */
 const KSEL={}; // kanaal -> {soorten:Set, lengte}
@@ -1097,6 +1116,7 @@ async function maakKanalen(o,sel){
       const {items,mis}=kanaalUitAI(r,sel);
       for(const s of sel)if(!items.some(i=>i.kanaal===s.kanaal&&i.soort===s.soort))items.push(kanaalLokaal(o,s));
       if(mis.length)notes.push(`De AI leverde geen tekst voor: ${mis.join(', ')}. Die komt uit de voorbeeldgenerator.`);
+      for(const it of items)it.warn=it.src==='ai'?riskList(it.velden.map(f=>f.text).join(' ')+' '+it.cta,o):[];
       aiState='ok';setMode();return{items:sortKanaal(items),notes}}
     catch(e){aiState='fail';setMode();notes.push(`De AI-aanvraag voor de kanalen is mislukt (${clean(e&&e.message||'onbekende fout').slice(0,90)}). Deze teksten komen uit de voorbeeldgenerator.`)}}
   return{items:sortKanaal(sel.map(s=>kanaalLokaal(o,s))),notes}}
@@ -1136,6 +1156,7 @@ function kaart(it,inPlanner){
   const bron=el('span',{class:'pill '+(it.src==='ai'?'ai':'tpl'),text:it.src==='ai'?'Gemaakt door AI':'Voorbeeldgenerator'});
   return el('article',{class:'kkaart'},
     el('div',{class:'rhead'},el('h3',{class:'rtitle'},`${KANALEN[it.kanaal].naam} · ${SOORTEN[it.soort]}`,' ',bron),el('div',{class:'tools'},kop)),
+    it.warn&&it.warn.length?el('p',{class:'warn',text:`Controleer: de AI noemt ${it.warn.map(x=>`“${x}”`).join(', ')}, en dat staat niet in je invoer.`}):null,
     ...veldEls,
     it.kanaal==='metaads'?null:el('div',{class:'kveld'},el('div',{class:'klabel'},el('span',{text:'Call-to-action'})),cta),
     el('div',{class:'kvoet'},el('label',{},'Datum ',datum),el('label',{},'Status ',status),inPlanner?null:plan))}
@@ -1145,6 +1166,12 @@ function renderKanalen(notes){
   $('#kLijst').replaceChildren(...kItems.map(it=>kaart(it,false)));
   $('#kAlles').disabled=!dbBackend||!kItems.length||kItems.every(i=>i.inPlanner)}
 const kTimers={};
+const planQ={};
+function planSchrijf(id){
+  const nu=()=>{const k=kItems.find(i=>i.id===id&&i.inPlanner);return k?planRecord(k):planItems.find(x=>x.id===id)};
+  planQ[id]=(planQ[id]||Promise.resolve()).catch(()=>{}).then(async()=>{const rec=nu();if(!rec)return;await PBK[dbBackend].save(rec);
+    const i=planItems.findIndex(x=>x.id===id);if(i>=0)planItems[i]=rec;else planItems.push(rec)});
+  return planQ[id]}
 function kWijzig(it,direct){if(!it.inPlanner)return;clearTimeout(kTimers[it.id]);kTimers[it.id]=setTimeout(()=>planBewaar(it),direct?0:800)}
 
 /* ---------- contentplanner (database) ---------- */
@@ -1171,11 +1198,11 @@ async function planLaad(){const r=await PBK[dbBackend].list();planItems=(r||[]).
   planStatus(`${planItems.length} ${planItems.length===1?'tekst':'teksten'} in de planner · opgeslagen in ${dbBackend==='supabase'?'Supabase':'de database van het artifact'}`,'on');renderPlan()}
 async function planZet(items){
   if(!dbBackend)return;const todo=items.filter(i=>!i.inPlanner);if(!todo.length)return;
-  try{for(const it of todo){it.product=it.product||(last&&last.o.product)||'';await PBK[dbBackend].save(planRecord(it));it.inPlanner=true}
+  try{for(const it of todo){it.product=it.product||(last&&last.o.product)||'';it.inPlanner=true;try{await planSchrijf(it.id)}catch(e){it.inPlanner=false;throw e}}
     await planLaad();renderKanalen();toast(todo.length===1?'In de planner gezet.':`${todo.length} teksten in de planner gezet.`)}
   catch(e){planStatus('Opslaan mislukt: '+errTxt(e),'err');toast('Opslaan in de planner mislukt.')}}
 async function planBewaar(it){
-  try{await PBK[dbBackend].save(planRecord(it));const i=planItems.findIndex(p=>p.id===it.id);if(i>=0)planItems[i]=planRecord(it);else planItems.push(planRecord(it));renderPlan()}
+  try{await planSchrijf(it.id);renderPlan()}
   catch(e){planStatus('Bewaren mislukt: '+errTxt(e),'err')}}
 async function planVerwijder(p,btn){
   if(!btn.classList.contains('sure')){btn.classList.add('sure');btn.textContent='Zeker?';setTimeout(()=>{btn.classList.remove('sure');btn.textContent='Verwijder'},3000);return}
@@ -1196,14 +1223,14 @@ function renderPlan(){
   const groepen=[];for(const p of lijst){let g=groepen.find(x=>x.d===p.datum);if(!g)groepen.push(g={d:p.datum,items:[]});g.items.push(p)}
   $('#planList').replaceChildren(...groepen.map(g=>el('div',{class:'pdag'},el('h3',{text:dagLabel(g.d)}),...g.items.map(p=>{
     const st=el('select',{class:'pstatus s-'+p.status,attrs:{'aria-label':'Status'}},...['concept','klaar','geplaatst'].map(s=>el('option',{value:s,text:cap(s),selected:s===p.status})));
-    st.addEventListener('change',async()=>{p.status=st.value;st.className='pstatus s-'+p.status;const k=kItems.find(i=>i.id===p.id);if(k)k.status=p.status;await planOpslaan(p);renderKanalen()});
+    st.addEventListener('change',async()=>{p.status=st.value;st.className='pstatus s-'+p.status;const k=kItems.find(i=>i.id===p.id);if(k)k.status=p.status;await planOpslaan(p);renderPlan();renderKanalen()});
     const dt=el('input',{type:'date',value:p.datum,attrs:{'aria-label':'Datum'}});dt.addEventListener('change',async()=>{if(!dt.value)return;p.datum=dt.value;const k=kItems.find(i=>i.id===p.id);if(k)k.datum=p.datum;await planOpslaan(p);renderPlan();renderKanalen()});
     const kop=el('button',{class:'ib',type:'button',text:'Kopieer'});kop.addEventListener('click',()=>copyText(kaartTekst(p),kop));
     const del=el('button',{class:'del',type:'button',text:'Verwijder'});del.addEventListener('click',()=>planVerwijder(p,del));
     const eerste=(p.velden[0]&&p.velden[0].text)||'';
     return el('div',{class:'prij'},el('div',{class:'pwat'},el('b',{text:`${KANALEN[p.kanaal].naam} · ${SOORTEN[p.soort]}`}),el('span',{text:eerste,attrs:{title:kaartTekst(p)}})),
       el('div',{class:'pacties'},dt,st,kop,del))}))))}
-async function planOpslaan(p){try{await PBK[dbBackend].save(p);planStatus(`${planItems.length} ${planItems.length===1?'tekst':'teksten'} in de planner · opgeslagen in ${dbBackend==='supabase'?'Supabase':'de database van het artifact'}`,'on')}catch(e){planStatus('Bewaren mislukt: '+errTxt(e),'err')}}
+async function planOpslaan(p){try{await planSchrijf(p.id);planStatus(`${planItems.length} ${planItems.length===1?'tekst':'teksten'} in de planner · opgeslagen in ${dbBackend==='supabase'?'Supabase':'de database van het artifact'}`,'on')}catch(e){planStatus('Bewaren mislukt: '+errTxt(e),'err')}}
 $('#planSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;planView=b.dataset.v;renderPlan()});
 function weekTekst(){const {ma,zo}=weekRange();const w=dezeWeek().sort((a,b)=>a.datum.localeCompare(b.datum)||KVOLG.indexOf(a.kanaal)-KVOLG.indexOf(b.kanaal)||SVOLG.indexOf(a.soort)-SVOLG.indexOf(b.soort));
   return `Contentplanning week ${weekNr(ma)} (${ma.toLocaleDateString('nl-NL',{day:'numeric',month:'long'})} – ${zo.toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'})})\n\n`+

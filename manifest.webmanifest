@@ -1,0 +1,16 @@
+{
+  "name": "VerkoopPraat – Maak het verkoopbaar",
+  "short_name": "VerkoopPraat",
+  "description": "Verkoopteksten per kanaal maken met AI en plannen in een contentplanner.",
+  "lang": "nl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f5f7",
+  "theme_color": "#0f6b55",
+  "icons": [
+    { "src": "pwa/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "pwa/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "pwa/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

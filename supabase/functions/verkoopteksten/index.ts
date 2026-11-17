@@ -51,7 +51,8 @@ function kanaalVelden(kanaal,soort,lengte){
 function basisPrompt(d){
   const eig=d.sterke_punten||[],prijs=d.prijs,merk=d.merk_of_winkel,ctx=d.gebruikscontext,formal=d.aanspreekvorm==='u';
   const humor=/grappig|speels|humor|lol|grap/i.test(d.stijl)?`
-- Humor is hier het belangrijkste: de lezer moet echt grinniken. Gebruik een herkenbare, overdreven situatie uit het leven van de doelgroep, een onverwachte draai, zelfspot of een woordgrap. Liever één sterke grap dan veel uitroeptekens.
+- Humor is hier het belangrijkste: de lezer moet echt grinniken. Gebruik een herkenbare situatie rond het product, een onverwachte draai of een woordgrap. Liever één sterke grap dan veel uitroeptekens.
+- Maak geen grap ten koste van de doelgroep (dus niet over 'luie studenten' of 'afwassen doe je toch niet').
 - De grap zit in de situatie en de formulering, nooit in verzonnen producteigenschappen of beloftes.
 - Vermijd clichés zoals "Breaking news", "Wie kent het niet?" en "nog nooit zo makkelijk".`:'';
   return `Je bent een ervaren Nederlandse copywriter die voor kleine webshops teksten schrijft die echt verkopen: pakkend, concreet en menselijk, zoals een goede social-mediamanager dat doet. Geen ambtelijke of opsommende zinnen.
@@ -62,7 +63,9 @@ ${JSON.stringify(d)}
 Feiten (heel belangrijk):
 - Gebruik als feiten alleen wat in "product", "sterke_punten", "prijs" en "merk_of_winkel" staat. Verzin geen nieuwe eigenschappen, materialen, maten, getallen, percentages, kortingen, acties, levertijden, garanties, keurmerken, duurzaamheids- of gezondheidsclaims.
 - Je mag wél het directe, logische gevolg van een opgegeven eigenschap noemen, zodat het een voordeel wordt. Voorbeeld: "lekvrij" → "geen natte tas meer"; "vaatwasserbestendig" → "zo weer schoon". Blijf daarbij dicht bij de eigenschap en noem geen onderdelen die niet zijn opgegeven (zoals een dop, handvat of deksel).
+- Verzin ook geen details over gebruik of situatie die als feit klinken, zoals "zonder bijvullen" of "je college duurt drie uur".
 - Geen lege verkoopwoorden die iets beweren wat niet is opgegeven, zoals "handig", "perfect", "de beste", "slechts" of "maar".
+- Verzin geen verkoopplek of website. Verwijs naar "de productpagina" of naar de winkel uit "merk_of_winkel". "Link in bio" alleen bij Instagram en TikTok.
 - ${eig.length?'Verwerk de sterke punten als voordelen, niet als droge opsomming.':'Er zijn geen sterke punten opgegeven: noem geen eigenschappen van het product. Maak de tekst sterk via de situatie van de doelgroep, de stijl en een nieuwsgierig makende call-to-action.'}
 - ${prijs?`Noem de prijs precies als "${prijs}".`:'Er is geen prijs: noem geen bedrag.'}${merk?` Noem het merk "${merk}".`:''}
 
@@ -71,7 +74,7 @@ Schrijfwijze:
 - Doelgroep "${d.doelgroep}": spreek de lezer aan met "${formal?'u':'je'}" en gebruik een herkenbare situatie${ctx?` (${ctx})`:''}. Geen stereotypen.
 - Stijl "${d.stijl}" en energie ${d.energie} (1 = rustig, 2 = pittig, 3 = uitbundig) bepalen toon, ritme en woordkeus. Maak de stijl duidelijk merkbaar.${humor}
 - ${d.emoji?'Gebruik een paar passende emoji’s, niet overdreven.':'Gebruik geen emoji’s.'}
-- Correct, vlot Nederlands. Geen anglicismen als het Nederlands net zo goed kan.`}
+- Correct, vlot Nederlands. Geen Engelse woorden of hashtags (dus niet "Hey" of #collegelife).${/tiener|kind|jeugd|scholier/i.test(d.doelgroep||'')?'\n- De doelgroep is (deels) minderjarig: geen koopdruk of haast (zoals "nu kopen" of "op is op").':''}`}
 
 /* Prompt voor de vaste teksten (slogan, Instagram, pitch). */
 function vastePrompt(d,part){
@@ -107,7 +110,7 @@ function kanaalPrompt(d,sel){
     else{regels.push(`- "${id}": ${K.regel} Lengte ${s.lengte}: maximaal ${L} tekens (dit is een harde bovengrens voor deze tekst, ook al staat het platform meer toe).`);vorm.push(`"${id}": {"tekst": string}`)}}
   return basisPrompt(d)+`
 
-Maak per kanaal een eigen, complete tekst in het formaat van dat kanaal. Tel tekens inclusief spaties, leestekens, emoji's en hashtags, en blijf ruim binnen elke limiet.
+Maak per kanaal een eigen, complete tekst in het formaat van dat kanaal. Gebruik in elke tekst een andere haak en een ander beeld of grap: herhaal niet hetzelfde beeld in meer dan één tekst. Tel tekens inclusief spaties, leestekens, emoji's en hashtags, en blijf ruim binnen elke limiet.
 ${regels.join('\n')}
 
 Geef bij elke tekst ook "cta": één korte call-to-action die bij dat kanaal past (bij Meta Ads gelijk aan de knop). Gebruik \\n voor nieuwe regels.
@@ -121,7 +124,7 @@ const MODELS = [
   { name: "gemini-3.7-flash", think: "low", timeout: { vast: 25_000, kanalen: 45_000 } },
   { name: "gemini-3.5-flash-lite", think: null, timeout: { vast: 15_000, kanalen: 25_000 } },
 ];
-const LIMIT = 20; // aanvragen per gebruiker per 10 minuten (per functie-instantie)
+const LIMIT = 30; // aanvragen per gebruiker per 10 minuten (per functie-instantie); één klik met kanalen telt als 2
 const hits = new Map();
 
 const clean = (s, max) => String(s ?? "").replace(/\s+/g, " ").trim().slice(0, max);
@@ -182,12 +185,6 @@ Deno.serve(async (req) => {
   if (!who.ok) return reply({ error: "Niet ingelogd." }, 401);
   const user = await who.json();
 
-  const now = Date.now();
-  const list = (hits.get(user.id) ?? []).filter((t) => now - t < 600_000);
-  if (list.length >= LIMIT) return reply({ error: "Te veel aanvragen. Probeer het over een paar minuten opnieuw." }, 429);
-  list.push(now);
-  hits.set(user.id, list);
-
   let body;
   try { body = await req.json(); } catch { return reply({ error: "Ongeldige invoer." }, 400); }
   const part = ["all", "slogan", "insta", "pitch", "kanalen"].includes(String(body.part)) ? String(body.part) : "all";
@@ -202,6 +199,13 @@ Deno.serve(async (req) => {
   } else {
     prompt = vastePrompt(data, part);
   }
+
+  // Pas na een geldige invoer meetellen (iteratie 008, review technische denker).
+  const now = Date.now();
+  const list = (hits.get(user.id) ?? []).filter((t) => now - t < 600_000);
+  if (list.length >= LIMIT) return reply({ error: "Te veel aanvragen. Probeer het over een paar minuten opnieuw." }, 429);
+  list.push(now);
+  hits.set(user.id, list);
 
   const key = Deno.env.get("GEMINI_API_KEY");
   if (!key) return reply({ error: "AI-sleutel is niet ingesteld op de server." }, 500);
