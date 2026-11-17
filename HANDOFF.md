@@ -32,6 +32,12 @@ Bijgewerkt: 17 november 2026 (na iteratie 008). Lees eerst `AGENTS.md`.
 - **Feedbackrollen:** review door vier subagents, met verbeteringen; zie `docs/bewijs/iteratie-008/`.
 - **Documenten:** `docs/PRD.md`, `AGENTS.md` en dit bestand.
 
+## Presentatie en huiswerk
+
+- `Sprintpresentatie 1 - VerkoopPraat (concept).pptx`: 12 dia's voor de 10 minuten en 11 bijlagedia's met bewijslast per persoon. Opnieuw bouwen: `npm install pptxgenjs@3.12.0` in `docs/presentatie-bouw/`, dan `node bouw.js "<uitvoer.pptx>"` met `NODE_PATH` op die `node_modules` en `PPTX_SKILL` op de pptx-skill.
+- **Nog in te vullen:** sprekers (dia 2), zes screenshots (bijlage, iteratie 002–008) en de reservescreenshot bij de demo (dia 8).
+- `Huiswerk les 2-1 - VerkoopPraat.docx`: huiswerkuitwisseling. Deel A: bevindingen per persoon. Deel B: de zes vragen voor bol.com.
+
 ## Volgende stappen
 
 1. Feedback van een ander groepje ophalen (les 2-2) en verwerken.
