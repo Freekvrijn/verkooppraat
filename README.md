@@ -20,7 +20,15 @@ Supabase
 
 - `index.html`: de hele app (HTML, CSS en JavaScript, geen build nodig).
 - `supabase/schema.sql`: tabel, rechten en RLS-policies.
+- `supabase/schema-planner.sql`: tabel `posts` voor de contentplanner (zelfde RLS-aanpak).
 - `supabase/functions/verkoopteksten/index.ts`: de Edge Function voor de AI.
+- `supabase/functions/verkoopteksten/gedeeld.js`: kanalen, tekenlimieten en prompts. Staat letterlijk in `index.html` en `index.ts`; plakken met `python3 supabase/functions/verkoopteksten/bouw-gedeeld.py`.
+
+## Kanalen en contentplanner
+
+Bij stap 4 kies je in een vinkjestabel per kanaal wat je wilt: slogan, post, pitch of advertentie. Alleen die combinaties worden gemaakt, in het formaat van het kanaal: Instagram, Facebook, LinkedIn, TikTok, X, Google Ads (koppen en beschrijvingen), Meta Ads (primaire tekst, kop en knop), e-mail (onderwerpregel en openingszin) en WhatsApp. Per kanaal kies je kort, middel of lang.
+
+Elke tekst krijgt een kaart met een tekenteller. Die wordt oranje boven de aanbevolen lengte en rood boven de harde limiet van het platform. Met een datum en een status (concept, klaar of geplaatst) zet je de tekst in de contentplanner. Die wordt in de database bewaard. ‘Kopieer deze week’ en ‘Download deze week’ geven alle teksten van de huidige week in één keer.
 
 De kosten van Gemini zijn begrensd met een maandlimiet van € 5. De publishable key in `index.html` is bedoeld voor de browser en geeft alleen toegang via RLS. Er staat geen geheime sleutel in deze repository.
 
