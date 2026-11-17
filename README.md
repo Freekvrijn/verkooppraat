@@ -14,7 +14,7 @@ Browser (GitHub Pages)
   ▼
 Supabase
   ├─ tabel histories   → bewaarde teksten; Row Level Security: iedereen ziet alleen eigen rijen
-  └─ Edge Function     → bouwt de prompt en roept Google Gemini aan (gratis laag)
+  └─ Edge Function     → bouwt de prompt en roept Google Gemini aan (gemini-3.7-flash, terugval op gemini-3.5-flash-lite)
                          de Gemini-sleutel staat alleen als Supabase-secret
 ```
 
@@ -22,7 +22,7 @@ Supabase
 - `supabase/schema.sql`: tabel, rechten en RLS-policies.
 - `supabase/functions/verkoopteksten/index.ts`: de Edge Function voor de AI.
 
-De publishable key in `index.html` is bedoeld voor de browser en geeft alleen toegang via RLS. Er staat geen geheime sleutel in deze repository.
+De kosten van Gemini zijn begrensd met een maandlimiet van € 5. De publishable key in `index.html` is bedoeld voor de browser en geeft alleen toegang via RLS. Er staat geen geheime sleutel in deze repository.
 
 ## Regels voor de AI
 
@@ -34,7 +34,7 @@ Als de AI niet bereikbaar is, schrijft een ingebouwde voorbeeldgenerator de teks
 
 | | GitHub-versie (deze) | Claude-artifact |
 | --- | --- | --- |
-| AI | Google Gemini via Supabase Edge Function | Claude, ingebouwd in het artifact |
+| AI | Google Gemini 3.7 Flash via Supabase Edge Function | Claude, ingebouwd in het artifact |
 | Database | Supabase | Database van het artifact (Supabase is daar geblokkeerd) |
 | Openbaar | Ja | Nee, alleen binnen de organisatie |
 
