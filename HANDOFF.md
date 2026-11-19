@@ -2,6 +2,33 @@
 
 Bijgewerkt: 17 november 2026 (na iteratie 008). Lees eerst `AGENTS.md`.
 
+## 19 november 2026 — iteratie 010: Live demo
+
+Nieuw tabblad **Live demo** met een QR-code en een gezamenlijk resultatenbord.
+Start een sessie, toon de QR-code en laat deelnemers product, doelgroep en stijl
+invullen. Nieuwe volledige generaties worden automatisch gedeeld; de melding
+boven het formulier maakt dit vooraf duidelijk. Het bord ververst iedere vier
+seconden, met slogan en bericht op kaarten; pitch en kanaalteksten zijn uitklapbaar.
+Deelnemen vereist geen eigen account. Anonieme aanmelding blijft zoals voorheen.
+
+- Nieuwe tabellen `demo_rooms` en `demo_results`, met RLS en zonder directe
+  tabelrechten voor bezoekers. Alleen begrensde RPC-functies geven toegang.
+- `supabase/schema-demo.sql` is uitgevoerd via de bestaande Supabase SQL-editor.
+- Alleen wie de willekeurige sessielink heeft kan resultaten lezen en toevoegen.
+  De bestaande geschiedenis en planner blijven privé.
+- Alleen de eigenaar kan de sessie sluiten. Sessies verlopen na 12 uur.
+- Presentatiestand, deelnamelink kopiëren, handmatig verversen, opnieuw delen na
+  een netwerkfout en demo verlaten zijn toegevoegd.
+- QR-code wordt lokaal in de browser gemaakt, zonder externe QR-dienst.
+- Deze uitbreiding is voor de openbare GitHub Pages-app. Het Claude-artifact is
+  niet bijgewerkt: de gebruiker vroeg expliciet om de app op GitHub main.
+
+Validatie: JavaScript-syntax en diffcontrole geslaagd. Lokale app geopend als
+bestand: sessie in Chrome gestart; tweede browser Safari kon die sessie lezen en
+een gegenereerd resultaat opslaan. AI vanuit file:// viel terug op de duidelijk
+vermelde voorbeeldgenerator; daadwerkelijke AI-route moet live gecontroleerd worden.
+Installatie op een echte telefoon en fysiek scannen zijn niet gecontroleerd.
+
 ## Wat is klaar
 
 | Onderdeel | Waar | Getest |

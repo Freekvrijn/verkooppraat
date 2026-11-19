@@ -1,7 +1,7 @@
 /* VerkoopPraat – service worker (PWA).
    Bewaart alleen de app zelf, zodat hij snel opent en installeerbaar is.
    Supabase, Gemini en andere externe aanvragen gaan altijd rechtstreeks naar het netwerk en worden nooit bewaard. */
-const CACHE = 'verkooppraat-v1';
+const CACHE = 'verkooppraat-v2-demo';
 const APP = ['./', './index.html', './manifest.webmanifest', './pwa/icon-192.png', './pwa/icon-512.png', './pwa/icon-maskable-512.png', './pwa/apple-touch-icon.png'];
 
 self.addEventListener('install', (e) => {
